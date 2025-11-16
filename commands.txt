@@ -1,0 +1,16 @@
+-> çalıştırmak için
+mvn compile
+mvn javafx:run
+
+-> derlemek için
+mvn package
+
+-> jar dosyasını çalıştırmak için
+java -jar target/untitled-1.jar
+
+-> jar dosyasını oluşturmak için
+mvn clean package
+
+-> stash atmak için ve aynı yeri yüklemek için
+git stash
+git stash apply

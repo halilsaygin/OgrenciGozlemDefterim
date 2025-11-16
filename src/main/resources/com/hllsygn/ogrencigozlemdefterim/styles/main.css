@@ -1,0 +1,8 @@
+.main-background {
+    -fx-background-color: #ABEBC6;
+}
+
+.content-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+}

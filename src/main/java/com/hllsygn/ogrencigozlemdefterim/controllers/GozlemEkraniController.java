@@ -1,46 +1,67 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package com.hllsygn.ogrencigozlemdefterim.controllers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.hllsygn.ogrencigozlemdefterim.models.Ogrenci;
-import com.hllsygn.ogrencigozlemdefterim.utils.AlertDialog;
-import com.hllsygn.ogrencigozlemdefterim.utils.DatabaseOperations;
-import com.hllsygn.ogrencigozlemdefterim.utils.PushAnimation;
+import com.hllsygn.ogrencigozlemdefterim.database.SampleData;
 import com.hllsygn.ogrencigozlemdefterim.utils.SceneController;
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
-import javafx.util.Duration;
-
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class GozlemEkraniController implements Initializable {
 
+    @FXML
+    private Label label_sinif;
+
+    @FXML
+    private ComboBox<String> combobox_ogrenciler;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-
+        // TODO
     }
 
+    public void initData(String className) {
+        label_sinif.setText(className);
+        populateStudentComboBox(className);
+    }
+
+    private void populateStudentComboBox(String className) {
+        ObservableList<String> studentList = FXCollections.observableArrayList();
+        String[] classAndBranch = className.split("(?<=\\d)(?=\\D)");
+        int sinif = Integer.parseInt(classAndBranch[0]);
+        String sube = classAndBranch[1];
+
+        for (SampleData student : SampleData.values()) {
+            if (student.getSinif() == sinif && student.getSube().equals(sube)) {
+                studentList.add(student.getAdSoyad());
+            }
+        }
+        combobox_ogrenciler.setItems(studentList);
+    }
+
+    /**
+     * Handles the home image click to return to main screen
+     */
+    public void anaSahneAc(MouseEvent event) {
+        try {
+            SceneController.getInstance().anaSahneDon();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the save button action
+     */
+    public void kaydet(ActionEvent event) {
+        // TODO: Implement save logic
+    }
 }

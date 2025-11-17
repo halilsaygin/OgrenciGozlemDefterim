@@ -1,5 +1,5 @@
 -> çalıştırmak için
-mvn compile
+mvn clean compile
 mvn javafx:run
 
 -> derlemek için
@@ -12,5 +12,5 @@ java -jar target/untitled-1.jar
 mvn clean package
 
 -> stash atmak için ve aynı yeri yüklemek için
-git stash
+git stash -m "WIP: mesaj"
 git stash apply

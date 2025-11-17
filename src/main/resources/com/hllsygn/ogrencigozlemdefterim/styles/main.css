@@ -6,3 +6,28 @@
     -fx-background-color: white;
     -fx-background-radius: 15;
 }
+
+.constant-label{
+    -fx-font-family: Arial, sans-serif;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-color: #333;
+    -fx-text-align: center; 
+}
+
+.class-label {
+    -fx-alignment: center;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 40px;
+    -fx-background-color: #F2F2F2;
+    -fx-border-color: black;
+    -fx-border-radius: 5px;
+    -fx-border-width: 2;
+    -fx-pref-width: 120px;
+    -fx-pref-height: 60px;
+    -fx-text-alignment: center;
+}
+
+.class-label:hover {
+    -fx-background-color: #E0E0E0;
+}

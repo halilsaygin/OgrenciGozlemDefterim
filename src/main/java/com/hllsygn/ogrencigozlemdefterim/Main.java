@@ -1,6 +1,8 @@
 package com.hllsygn.ogrencigozlemdefterim;
 
+import com.hllsygn.ogrencigozlemdefterim.database.DBConnect;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Objects;
 
 import javafx.application.Application;
@@ -15,14 +17,17 @@ public class Main extends Application {
     public static Stage _primaryStage;
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException, SQLException, ClassNotFoundException {
+        // Veritabanı bağlantısını başlat
+        DBConnect.getInstance();
+
         _primaryStage = primaryStage;
 
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/Main.fxml")));
         Scene scene = new Scene(root);
 
         // ayarla uygualama pencere ikonu
-        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/hllsygn/ogrencigozlemdefterim/icon_app.png")));
+        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/hllsygn/ogrencigozlemdefterim/app_icon.png")));
         _primaryStage.getIcons().add(icon);
 
         _primaryStage.setResizable(false);
@@ -30,6 +35,13 @@ public class Main extends Application {
         _primaryStage.setScene(scene);
         _primaryStage.show();
 
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // Uygulama kapanırken veritabanı bağlantısını kapat
+        DBConnect.getInstance().closeConnection();
+        super.stop();
     }
 
     /**

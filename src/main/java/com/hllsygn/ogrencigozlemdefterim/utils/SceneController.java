@@ -68,7 +68,8 @@ public class SceneController {
         Parent root = loader.load();
 
         GozlemEkraniController controller = loader.getController();
-        controller.initData(className);
+        // Hata düzeltildi: initData -> setSinifAdi
+        controller.setSinifAdi(className);
 
         Scene scene = new Scene(root);
         cssAyarla(scene, GOZLEM_EKRANI_FXML);

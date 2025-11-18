@@ -15,7 +15,6 @@
                       <items>
                         <MenuItem fx:id="menuItem_listeAyarla" mnemonicParsing="false" onAction="#databaseAc" text="Listeleri Ayarla" />
                         <MenuItem fx:id="menuItem_tumunuSil" mnemonicParsing="false" onAction="#tumKayitlariSil" text="Tüm Kayıtları Sil" />
-                        <MenuItem fx:id="menuItem_tumArtiEksiSil" mnemonicParsing="false" onAction="#tumArtiEksiKayitlariniSil" text="Tüm Artı-Eksi Kayıtlarını Sil" />
                         <MenuItem fx:id="menuItem_yeniYil" mnemonicParsing="false" onAction="#yeniYilAyarla" text="Yeni Yıl Geçişi" />
                       </items>
                   </Menu>

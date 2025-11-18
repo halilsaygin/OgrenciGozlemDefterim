@@ -17,7 +17,7 @@
                         <Image url="@../home.png" />
                      </image>
                   </ImageView>
-                  <Label id="label-sinif" fx:id="label_sinif" layoutX="658.0" layoutY="12.0" text="Sınıf" />
+                  <Label id="label-sinif" fx:id="lbl_sinif_adi" layoutX="658.0" layoutY="12.0" text="Sınıf" />
                </children>
             </Pane>
             <Pane prefHeight="497.0" prefWidth="780.0">
@@ -37,7 +37,7 @@
                                     <Insets />
                                  </HBox.margin>
                               </Label>
-                              <ComboBox fx:id="combobox_ogrenciler" prefWidth="200.0" />
+                              <ComboBox fx:id="combx_ogrenciler" prefWidth="200.0" />
                            </children>
                         </HBox>
                         <Label id="label_gozlemlerim" alignment="CENTER" text="Gözlemlerim">
@@ -48,7 +48,7 @@
                               <Insets top="20.0" />
                            </VBox.margin>
                         </Label>
-                        <TextArea fx:id="textarea_gozlem" prefHeight="350.0" prefWidth="760.0" wrapText="true">
+                        <TextArea fx:id="txt_gozlem" prefHeight="350.0" prefWidth="760.0" wrapText="true">
                            <VBox.margin>
                               <Insets left="10.0" right="10.0" top="10.0" />
                            </VBox.margin></TextArea>

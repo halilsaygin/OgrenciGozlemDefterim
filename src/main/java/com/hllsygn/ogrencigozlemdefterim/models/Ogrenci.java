@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.hllsygn.ogrencigozlemdefterim.models;
 
 import javafx.beans.property.IntegerProperty;
@@ -11,12 +7,11 @@ import javafx.beans.property.StringProperty;
 
 public class Ogrenci {
 
-    private final IntegerProperty no; // primary key
-    private StringProperty ad;
-    private StringProperty soyad;
-    private IntegerProperty sinif;
-    private StringProperty sube;
-    
+    private final IntegerProperty no;
+    private final StringProperty ad;
+    private final StringProperty soyad;
+    private final IntegerProperty sinif;
+    private final StringProperty sube;
 
     public Ogrenci(int no, String ad, String soyad, int sinif, String sube) {
         this.no = new SimpleIntegerProperty(no);
@@ -25,17 +20,25 @@ public class Ogrenci {
         this.sinif = new SimpleIntegerProperty(sinif);
         this.sube = new SimpleStringProperty(sube);
     }
-    
 
-    public int getNo() { return this.no.get();}
-    public String getAd() {return this.ad.get();}
-    public void setAd(String ad) {this.ad.set(ad);}
-    public String getSoyad() {return this.soyad.get();}
-    public void setSoyad(String soyad) {this.soyad.set(soyad);}
-    public int getSinif() { return this.sinif.get();}
-    public void setSinif(int sinif) {this.sinif.set(sinif);}
-    public String getSube() { return this.sube.get();}
-    public void setSube(String sube) {this.sube.set(sube);}
+    public int getNo() { return no.get(); }
+    public String getAd() { return ad.get(); }
+    public void setAd(String ad) { this.ad.set(ad); }
+    public String getSoyad() { return soyad.get(); }
+    public void setSoyad(String soyad) { this.soyad.set(soyad); }
+    public int getSinif() { return sinif.get(); }
+    public void setSinif(int sinif) { this.sinif.set(sinif); }
+    public String getSube() { return sube.get(); }
+    public void setSube(String sube) { this.sube.set(sube); }
+
+    // Property getters for TableView
+    public IntegerProperty noProperty() { return no; }
+    public StringProperty adProperty() { return ad; }
+    public StringProperty soyadProperty() { return soyad; }
+    public IntegerProperty sinifProperty() { return sinif; }
+    public StringProperty subeProperty() { return sube; }
     
-   
+    public String getAdSoyad() {
+        return getAd() + " " + getSoyad();
+    }
 }

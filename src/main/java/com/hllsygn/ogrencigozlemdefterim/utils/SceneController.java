@@ -10,17 +10,18 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class SceneController {
 
     private static SceneController instance;
     private final Stage stage = Main._primaryStage;
     private final double DURATION = 0.8;
-    private final String ANA_SAHNE_FXML = "Main.fxml";
+    private final String ANA_SAHNE_FXML = "/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/Main.fxml";
     private final String ANA_SAHNE_STIL_SAYFA = "main.css";
-    private final String DATABASE_SAHNE_FXML = "Database.fxml";
+    private final String DATABASE_SAHNE_FXML = "/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/Database.fxml";
     private final String DATABASE_STIL_SAYFA = "database.css";
-    private final String GOZLEM_EKRANI_FXML = "GozlemEkrani.fxml";
+    private final String GOZLEM_EKRANI_FXML = "/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/GozlemEkrani.fxml";
     private final String GOZLEM_EKRANI_STIL_SAYFA = "gozlem_ekrani.css";
 
 
@@ -32,7 +33,7 @@ public class SceneController {
     }
 
     public void sahneAc(String fxml_name) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource(fxml_name));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxml_name)));
         Scene scene = new Scene(root);
 
         cssAyarla(scene, fxml_name);
@@ -42,7 +43,7 @@ public class SceneController {
     }
 
     public void anaSahne_Ac() throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource(ANA_SAHNE_FXML));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(ANA_SAHNE_FXML)));
         Scene scene = new Scene(root);
 
         cssAyarla(scene, ANA_SAHNE_FXML);
@@ -54,7 +55,7 @@ public class SceneController {
     }
 
     public void databaseSahneAc() throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/" + DATABASE_SAHNE_FXML));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(DATABASE_SAHNE_FXML)));
         Scene scene = new Scene(root);
 
         cssAyarla(scene, DATABASE_SAHNE_FXML);
@@ -64,7 +65,7 @@ public class SceneController {
     }
 
     public void gozlemEkraniAc(String className) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/" + GOZLEM_EKRANI_FXML));
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource(GOZLEM_EKRANI_FXML)));
         Parent root = loader.load();
 
         GozlemEkraniController controller = loader.getController();
@@ -78,7 +79,7 @@ public class SceneController {
     }
 
     public void anaSahneDon() throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/fxmlfiles/" + ANA_SAHNE_FXML));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(ANA_SAHNE_FXML)));
         Scene scene = new Scene(root);
 
         cssAyarla(scene, ANA_SAHNE_FXML);
@@ -100,11 +101,11 @@ public class SceneController {
     public void cssAyarla(Scene scene, String fxmlName) {
         String css = "";
         if (fxmlName.equals(DATABASE_SAHNE_FXML)) {
-            css = this.getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/styles/" + DATABASE_STIL_SAYFA).toExternalForm();
+            css = Objects.requireNonNull(this.getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/styles/" + DATABASE_STIL_SAYFA)).toExternalForm();
         } else if (fxmlName.equals(GOZLEM_EKRANI_FXML)) {
-            css = this.getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/styles/" + GOZLEM_EKRANI_STIL_SAYFA).toExternalForm();
+            css = Objects.requireNonNull(this.getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/styles/" + GOZLEM_EKRANI_STIL_SAYFA)).toExternalForm();
         } else {
-            css = this.getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/styles/" + ANA_SAHNE_STIL_SAYFA).toExternalForm();
+            css = Objects.requireNonNull(this.getClass().getResource("/com/hllsygn/ogrencigozlemdefterim/styles/" + ANA_SAHNE_STIL_SAYFA)).toExternalForm();
         }
         scene.getStylesheets().clear();
         scene.getStylesheets().add(css);

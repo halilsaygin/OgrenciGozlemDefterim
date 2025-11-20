@@ -1,16 +1,61 @@
--> çalıştırmak için
-mvn clean compile
-mvn javafx:run
+=== GRADLE EYLEM KOMUTLARI ===
 
--> derlemek için
-mvn package
+# Temel Komutlar
+gradlew clean                    # Build çıktılarını temizler (build klasörünü siler)
+gradlew build                    # Projeyi derler ve test eder
+gradlew clean build              # Önce temizler, sonra derler
+gradlew run                      # Uygulamayı çalıştırır
 
--> jar dosyasını çalıştırmak için
-java -jar target/untitled-1.jar
+# Derleme Komutları
+gradlew compileJava              # Sadece Java kaynak kodlarını derler
+gradlew classes                  # Tüm sınıfları derler
+gradlew jar                      # JAR dosyası oluşturur
+gradlew fatJar                   # Tüm bağımlılıkları içeren tek JAR dosyası oluşturur
 
--> jar dosyasını oluşturmak için
-mvn clean package
+# Test Komutları
+gradlew test                     # Testleri çalıştırır
+gradlew test --tests TestClass   # Belirli bir test sınıfını çalıştırır
+gradlew cleanTest test           # Test önbelleğini temizler ve testleri yeniden çalıştırır
 
--> stash atmak için ve aynı yeri yüklemek için
-git stash -m "WIP: mesaj"
-git stash apply
+# Bağımlılık Komutları
+gradlew dependencies             # Proje bağımlılıklarını listeler
+gradlew dependencyInsight --dependency <name>  # Belirli bir bağımlılığın detaylarını gösterir
+
+# JLink ve JPackage Komutları
+gradlew jlink                    # JLink ile özel JRE oluşturur
+gradlew jlinkZip                 # JLink çıktısını ZIP olarak paketler
+gradlew jpackage                 # Platform-specific uygulama paketi oluşturur
+
+# Bilgi Komutları
+gradlew tasks                    # Kullanılabilir tüm görevleri listeler
+gradlew tasks --all              # Tüm görevleri (gizli olanlar dahil) listeler
+gradlew properties               # Proje özelliklerini gösterir
+gradlew projects                 # Alt projeleri listeler
+
+# Temizlik Komutları
+gradlew clean                    # Build çıktılarını siler
+gradlew cleanEclipse             # Eclipse yapılandırma dosyalarını siler
+
+# Eclipse IDE Komutları
+gradlew eclipse                  # Eclipse proje dosyalarını oluşturur
+gradlew cleanEclipse eclipse     # Eclipse dosyalarını yeniden oluşturur
+
+# Yardım ve Dokümantasyon
+gradlew help                     # Gradle yardım bilgilerini gösterir
+gradlew help --task <taskName>   # Belirli bir görev hakkında yardım gösterir
+
+# Performans ve Debug
+gradlew build --scan             # Build scan oluşturur (detaylı analiz)
+gradlew build --info             # Detaylı log çıktısı ile derler
+gradlew build --debug            # Debug seviyesinde log ile derler
+gradlew build --stacktrace       # Hata durumunda stack trace gösterir
+gradlew build --refresh-dependencies  # Bağımlılıkları yeniden indirir
+
+# Daemon Yönetimi
+gradlew --stop                   # Gradle daemon'ı durdurur
+gradlew --status                 # Gradle daemon durumunu gösterir
+
+# Özel Kombinasyonlar
+gradlew clean build run          # Temizle, derle ve çalıştır
+gradlew clean fatJar             # Temizle ve fat JAR oluştur
+gradlew clean jlink jpackage    # Temizle ve dağıtılabilir paket oluştur

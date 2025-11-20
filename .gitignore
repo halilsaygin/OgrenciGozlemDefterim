@@ -19,15 +19,93 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Gradle wrapper jar dosyasını ignore etme (gerekli)
+!gradle/wrapper/gradle-wrapper.jar
+
+# virtual machine crash logs
 hs_err_pid*
+replay_pid*
 
 # IDE files
 .idea/
 *.iml
 *.iws
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
 
-# Maven
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+nbactions.xml
+
+# Eclipse
+.apt_generated
+.springBeans
+.sts4-cache
+bin/
+.metadata
+
+# IntelliJ
+out/
+.out/
+
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# Build output directories
+bin/
+build/
+target/
+jpackage-output/
+
+# Logs
+logs/
+*.log
+
+# Database files - Geliştirme veritabanı
+*.db
+*.sqlite
+*.db-journal
+OgrenciVeritabani.db
+
+# Temporary files
+*.tmp
+*.temp
+~*
+*~
+*.swp
+*.swo
+*~.nib
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+ehthumbs_vista.db
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+
+# Java specific
+*.class
+*.war
+*.ear
+*.nar
+*.jpi
+*.hprof
+
+# Maven (eğer gelecekte kullanılırsa)
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -36,78 +114,17 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
-maven-archiver/
-maven-status/
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
-# NetBeans
-nbproject/private/
-nbbuild/
-dist/
-nbactions.xml
+# Test coverage
+*.exec
+.jacoco/
 
-# Eclipse
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-# IntelliJ
-.out
-
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-
-# Gradle
-.gradle/
-build/
-
-# Build output directories
-bin/
-build/
-
-# Logs
-logs/
-*.log
-
-# Database files
-*.db
-*.sqlite
-
-# Temporary files
-*.tmp
-*.temp
-~*
-*~
-
-# OS generated files
-.DS_Store*
-ehthumbs_vista.db
-Icon?
-Thumbs.db
-
-# IDE specific files
-.vscode/
-
-# Java specific
-*.class
-*.jar
-*.war
-*.ear
-*.nar
-*.jpi
-*.hprof
-
-# Maven wrapper
-.mvn/wrapper/maven-wrapper.properties
-mvnw
-mvnw.cmd
-
-
+# Geçici notlar ve issue takibi
 issues.md
+commands.txt
+
+# Error log dosyası
+error_log.txt
 

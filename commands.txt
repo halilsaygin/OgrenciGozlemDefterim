@@ -59,3 +59,7 @@ gradlew --status                 # Gradle daemon durumunu gösterir
 gradlew clean build run          # Temizle, derle ve çalıştır
 gradlew clean fatJar             # Temizle ve fat JAR oluştur
 gradlew clean jlink jpackage    # Temizle ve dağıtılabilir paket oluştur
+
+# çıktı yolu
+gradlew build jpackage -> 
+build\jpackage-output\OgrenciGozlemDefterim\OgrenciGozlemDefterim.exe

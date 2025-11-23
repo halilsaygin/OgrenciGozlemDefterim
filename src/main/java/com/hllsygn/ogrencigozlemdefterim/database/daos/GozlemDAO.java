@@ -2,6 +2,7 @@ package com.hllsygn.ogrencigozlemdefterim.database.daos;
 
 import com.hllsygn.ogrencigozlemdefterim.database.DBConnect;
 import com.hllsygn.ogrencigozlemdefterim.models.Gozlem;
+import com.hllsygn.ogrencigozlemdefterim.utils.ErrorLogger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,7 +30,7 @@ public class GozlemDAO {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Gözlem öğrenci no ile sorgulanırken hata - No: " + ogrenciNo, e);
         }
         return null;
     }

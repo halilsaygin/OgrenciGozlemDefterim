@@ -40,7 +40,7 @@ public class ErrorLogger {
             
         } catch (IOException e) {
             System.err.println("Log dosyasına yazılamadı: " + e.getMessage());
-            e.printStackTrace();
+            // printStackTrace kullanmıyoruz çünkü sonsuz döngüye girebilir
         }
     }
     

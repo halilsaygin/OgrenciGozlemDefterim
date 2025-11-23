@@ -2,6 +2,7 @@ package com.hllsygn.ogrencigozlemdefterim.database.daos;
 
 import com.hllsygn.ogrencigozlemdefterim.database.DBConnect;
 import com.hllsygn.ogrencigozlemdefterim.models.Ogrenci;
+import com.hllsygn.ogrencigozlemdefterim.utils.ErrorLogger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -58,7 +59,7 @@ public class OgrenciDAO {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Öğrenciler filtre ile sorgulanırken hata", e);
         }
         return ogrenciler;
     }
@@ -81,7 +82,7 @@ public class OgrenciDAO {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Öğrenciler sınıf-şube ile sorgulanırken hata - Sınıf: " + sinifSube, e);
         }
         return ogrenciler;
     }
@@ -99,7 +100,7 @@ public class OgrenciDAO {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Öğrenci ID ile sorgulanırken hata - No: " + no, e);
         }
         return null;
     }
@@ -125,8 +126,13 @@ public class OgrenciDAO {
     }
 
     public void delete(int no) throws SQLException {
-        String sql = "DELETE FROM OGRENCILER WHERE OGRENCI_NO = " + no;
-        statement.executeUpdate(sql);
+        // Önce öğrenciye ait gözlemleri sil
+        String deleteGozlemlerSql = "DELETE FROM GOZLEMLER WHERE OGRENCI_NO = " + no;
+        statement.executeUpdate(deleteGozlemlerSql);
+        
+        // Sonra öğrenciyi sil
+        String deleteOgrenciSql = "DELETE FROM OGRENCILER WHERE OGRENCI_NO = " + no;
+        statement.executeUpdate(deleteOgrenciSql);
     }
 
     public List<String> findAllSiniflar() {
@@ -137,7 +143,7 @@ public class OgrenciDAO {
                 siniflar.add(String.valueOf(rs.getInt("OGRENCI_SINIF")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Sınıflar sorgulanırken hata", e);
         }
         return siniflar;
     }
@@ -150,7 +156,7 @@ public class OgrenciDAO {
                 subeler.add(rs.getString("OGRENCI_SUBE"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Şubeler sorgulanırken hata", e);
         }
         return subeler;
     }
@@ -163,8 +169,24 @@ public class OgrenciDAO {
                 sinifSubeler.add(rs.getString("SinifSube"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            ErrorLogger.logError("Sınıf-şube listesi sorgulanırken hata", e);
         }
         return sinifSubeler;
+    }
+    
+    /**
+     * Veritabanında kayıtlı öğrenci sayısını döndürür
+     * @return Toplam öğrenci sayısı
+     */
+    public int countOgrenciler() {
+        String sql = "SELECT COUNT(*) AS TOPLAM FROM OGRENCILER";
+        try (ResultSet rs = statement.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt("TOPLAM");
+            }
+        } catch (SQLException e) {
+            ErrorLogger.logError("Öğrenci sayısı sorgulanırken hata", e);
+        }
+        return 0;
     }
 }

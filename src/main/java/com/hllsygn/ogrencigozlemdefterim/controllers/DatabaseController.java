@@ -2,12 +2,15 @@ package com.hllsygn.ogrencigozlemdefterim.controllers;
 
 import com.hllsygn.ogrencigozlemdefterim.database.daos.OgrenciDAO;
 import com.hllsygn.ogrencigozlemdefterim.models.Ogrenci;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertDialog;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertMessage;
+import com.hllsygn.ogrencigozlemdefterim.utils.ErrorLogger;
+import com.hllsygn.ogrencigozlemdefterim.utils.InputValidator;
 import com.hllsygn.ogrencigozlemdefterim.utils.SceneController;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,9 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -59,6 +60,7 @@ public class DatabaseController implements Initializable {
 
     private final OgrenciDAO ogrenciDAO = new OgrenciDAO();
     private final ObservableList<Ogrenci> ogrenciListesi = FXCollections.observableArrayList();
+    private Ogrenci selectedOgrenci = null; // Seçili öğrenciyi takip etmek için
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -71,12 +73,33 @@ public class DatabaseController implements Initializable {
         tableview_liste.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldSelection, newSelection) -> {
                     if (newSelection != null) {
+                        selectedOgrenci = newSelection;
                         showOgrenciDetails(newSelection);
                     }
                 });
+        
+        // Tüm text field'lara listener ekle - tümü boşsa seçimi kaldır
+        txtf_ad_soyad.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
+        txtf_sinif.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
+        txtf_sube.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
+        txtf_no.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
 
         loadFilterComboBoxes();
         loadOgrenciData();
+        
+        // İlk açılışta öğrenci kontrolü yap - UI tam yüklendikten sonra
+        javafx.application.Platform.runLater(this::checkFirstLaunchDatabase);
+    }
+    
+    /**
+     * Database ekranı ilk açıldığında öğrenci kaydı olup olmadığını kontrol eder
+     * Eğer kayıt yoksa kullanıcıyı bilgilendirir
+     */
+    private void checkFirstLaunchDatabase() {
+        int ogrenciSayisi = ogrenciDAO.countOgrenciler();
+        if (ogrenciSayisi == 0) {
+            AlertDialog.bilgi(AlertMessage.DATABASE_ILK_ACILIS);
+        }
     }
 
     private void loadOgrenciData() {
@@ -114,7 +137,20 @@ public class DatabaseController implements Initializable {
         txtf_sinif.setText(String.valueOf(ogrenci.getSinif()));
         txtf_sube.setText(ogrenci.getSube());
         txtf_no.setText(String.valueOf(ogrenci.getNo()));
-        txtf_no.setEditable(false);
+        txtf_no.setEditable(true); // Öğrenci no artık düzenlenebilir
+    }
+    
+    /**
+     * Tüm alanlar boşsa öğrenci seçimini kaldırır
+     */
+    private void checkAndClearSelection() {
+        if (txtf_ad_soyad.getText().trim().isEmpty() && 
+            txtf_sinif.getText().trim().isEmpty() && 
+            txtf_sube.getText().trim().isEmpty() && 
+            txtf_no.getText().trim().isEmpty()) {
+            selectedOgrenci = null;
+            tableview_liste.getSelectionModel().clearSelection();
+        }
     }
 
     private void clearForm() {
@@ -123,115 +159,163 @@ public class DatabaseController implements Initializable {
         txtf_sube.clear();
         txtf_no.clear();
         txtf_no.setEditable(true);
+        selectedOgrenci = null;
         tableview_liste.getSelectionModel().clearSelection();
     }
 
     @FXML
     public void ogrenciEkle(ActionEvent event) {
-        if (txtf_ad_soyad.getText().isEmpty() || txtf_sinif.getText().isEmpty() || txtf_sube.getText().isEmpty() || txtf_no.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Tüm alanlar doldurulmalıdır.");
+        // Tüm alanlar dolu mu kontrol et
+        if (txtf_ad_soyad.getText().trim().isEmpty() || 
+            txtf_sinif.getText().trim().isEmpty() || 
+            txtf_sube.getText().trim().isEmpty() || 
+            txtf_no.getText().trim().isEmpty()) {
+            AlertDialog.hata(AlertMessage.TUM_ALANLAR_DOLU);
             return;
         }
         
-        String ad;
-        String soyad;
+        // Öğrenci numarası validasyonu
+        if (!InputValidator.validateOgrenciNo(txtf_no.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_OGRENCI_NO);
+            return;
+        }
+        
+        // Ad Soyad validasyonu
+        if (!InputValidator.validateAdSoyad(txtf_ad_soyad.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_AD_SOYAD);
+            return;
+        }
+        
+        // Sınıf validasyonu
+        if (!InputValidator.validateSinif(txtf_sinif.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_SINIF);
+            return;
+        }
+        
+        // Şube validasyonu
+        if (!InputValidator.validateSube(txtf_sube.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_SUBE);
+            return;
+        }
+        
+        // Validasyonlar geçti, öğrenciyi kaydet
         String tamAd = txtf_ad_soyad.getText().trim();
         int lastSpaceIndex = tamAd.lastIndexOf(' ');
-
-        if (lastSpaceIndex == -1) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Lütfen hem ad hem de soyad giriniz.");
-            return;
-        }
+        String ad = tamAd.substring(0, lastSpaceIndex);
+        String soyad = tamAd.substring(lastSpaceIndex + 1);
         
-        ad = tamAd.substring(0, lastSpaceIndex);
-        soyad = tamAd.substring(lastSpaceIndex + 1);
-
         try {
-            int no = Integer.parseInt(txtf_no.getText());
-            int sinif = Integer.parseInt(txtf_sinif.getText());
+            int no = Integer.parseInt(txtf_no.getText().trim());
+            int sinif = Integer.parseInt(txtf_sinif.getText().trim());
+            String sube = txtf_sube.getText().trim();
 
             if (ogrenciDAO.findById(no) != null) {
-                showAlert(Alert.AlertType.ERROR, "Hata", "Bu numaraya sahip bir öğrenci zaten mevcut.");
+                AlertDialog.hata(AlertMessage.OGRENCI_MEVCUT);
                 return;
             }
-            Ogrenci yeniOgrenci = new Ogrenci(no, ad, soyad, sinif, txtf_sube.getText());
+            
+            Ogrenci yeniOgrenci = new Ogrenci(no, ad, soyad, sinif, sube);
             ogrenciDAO.save(yeniOgrenci);
             
-            // Başarılı ekleme sonrası Alert kaldırıldı.
             loadOgrenciData();
             loadFilterComboBoxes();
             clearForm();
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Öğrenci numarası ve sınıf geçerli bir sayı olmalıdır.");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Veritabanı Hatası", "Öğrenci eklenirken bir hata oluştu: " + e.getMessage());
+            ErrorLogger.logError("Öğrenci eklenirken hata", e);
+            AlertDialog.hataDetayli(AlertMessage.OGRENCI_EKLEME_HATASI, e.getMessage());
         }
     }
 
     @FXML
     public void ogrenciGuncelle(ActionEvent event) {
-        Ogrenci selectedOgrenci = tableview_liste.getSelectionModel().getSelectedItem();
         if (selectedOgrenci == null) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Lütfen güncellenecek bir öğrenci seçin.");
-            return;
-        }
-        if (txtf_ad_soyad.getText().isEmpty() || txtf_sinif.getText().isEmpty() || txtf_sube.getText().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Ad, Sınıf ve Şube alanları boş bırakılamaz.");
+            AlertDialog.hata(AlertMessage.OGRENCI_SECILMEDI_GUNCELLEME);
             return;
         }
         
-        String ad;
-        String soyad;
+        // Tüm alanlar dolu mu kontrol et
+        if (txtf_ad_soyad.getText().trim().isEmpty() || 
+            txtf_sinif.getText().trim().isEmpty() || 
+            txtf_sube.getText().trim().isEmpty() || 
+            txtf_no.getText().trim().isEmpty()) {
+            AlertDialog.hata(AlertMessage.TUM_ALANLAR_DOLU);
+            return;
+        }
+        
+        // Öğrenci numarası validasyonu
+        if (!InputValidator.validateOgrenciNo(txtf_no.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_OGRENCI_NO);
+            return;
+        }
+        
+        // Öğrenci numarası değiştirilmiş mi kontrol et
+        int girilenNo = Integer.parseInt(txtf_no.getText().trim());
+        if (girilenNo != selectedOgrenci.getNo()) {
+            AlertDialog.uyari(AlertMessage.OGRENCI_NO_DEGISTIRILDI);
+            return;
+        }
+        
+        // Ad Soyad validasyonu
+        if (!InputValidator.validateAdSoyad(txtf_ad_soyad.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_AD_SOYAD);
+            return;
+        }
+        
+        // Sınıf validasyonu
+        if (!InputValidator.validateSinif(txtf_sinif.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_SINIF);
+            return;
+        }
+        
+        // Şube validasyonu
+        if (!InputValidator.validateSube(txtf_sube.getText())) {
+            AlertDialog.uyari(AlertMessage.GECERSIZ_SUBE);
+            return;
+        }
+        
+        // Validasyonlar geçti, öğrenciyi güncelle
         String tamAd = txtf_ad_soyad.getText().trim();
         int lastSpaceIndex = tamAd.lastIndexOf(' ');
-
-        if (lastSpaceIndex == -1) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Lütfen hem ad hem de soyad giriniz.");
-            return;
-        }
-        
-        ad = tamAd.substring(0, lastSpaceIndex);
-        soyad = tamAd.substring(lastSpaceIndex + 1);
+        String ad = tamAd.substring(0, lastSpaceIndex);
+        String soyad = tamAd.substring(lastSpaceIndex + 1);
 
         try {
-            int sinif = Integer.parseInt(txtf_sinif.getText());
-            Ogrenci guncellenenOgrenci = new Ogrenci(selectedOgrenci.getNo(), ad, soyad, sinif, txtf_sube.getText());
+            int sinif = Integer.parseInt(txtf_sinif.getText().trim());
+            String sube = txtf_sube.getText().trim();
+            
+            Ogrenci guncellenenOgrenci = new Ogrenci(selectedOgrenci.getNo(), ad, soyad, sinif, sube);
             ogrenciDAO.update(guncellenenOgrenci);
 
-            showAlert(Alert.AlertType.INFORMATION, "Başarılı", "Öğrenci bilgileri güncellendi.");
+            AlertDialog.bilgi(AlertMessage.OGRENCI_GUNCELLENDI);
             loadOgrenciData();
             loadFilterComboBoxes();
             clearForm();
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Sınıf geçerli bir sayı olmalıdır.");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Veritabanı Hatası", "Öğrenci güncellenirken bir hata oluştu: " + e.getMessage());
+            ErrorLogger.logError("Öğrenci güncellenirken hata", e);
+            AlertDialog.hataDetayli(AlertMessage.OGRENCI_GUNCELLEME_HATASI, e.getMessage());
         }
     }
 
     @FXML
     public void ogrenciSil(ActionEvent event) {
-        Ogrenci selectedOgrenci = tableview_liste.getSelectionModel().getSelectedItem();
         if (selectedOgrenci == null) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Lütfen silinecek bir öğrenci seçin.");
+            AlertDialog.hata(AlertMessage.OGRENCI_SECILMEDI_SILME);
             return;
         }
 
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmationAlert.setTitle("Öğrenci Sil");
-        confirmationAlert.setHeaderText(selectedOgrenci.getAdSoyad() + " adlı öğrenciyi silmek istediğinizden emin misiniz?");
-        confirmationAlert.setContentText("Bu işlem geri alınamaz.");
-
-        Optional<ButtonType> result = confirmationAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (AlertDialog.onayHeader(
+                AlertMessage.OGRENCI_SIL_ONAY.getBaslik(),
+                selectedOgrenci.getAdSoyad() + " adlı öğrenciyi silmek istediğinizden emin misiniz?",
+                AlertMessage.OGRENCI_SIL_ONAY.getMesaj())) {
             try {
                 ogrenciDAO.delete(selectedOgrenci.getNo());
-                showAlert(Alert.AlertType.INFORMATION, "Başarılı", "Öğrenci başarıyla silindi.");
+                AlertDialog.bilgi(AlertMessage.OGRENCI_SILINDI);
                 loadOgrenciData();
                 loadFilterComboBoxes();
                 clearForm();
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Veritabanı Hatası", "Öğrenci silinirken bir hata oluştu: " + e.getMessage());
+                ErrorLogger.logError("Öğrenci silinirken hata", e);
+                AlertDialog.hataDetayli(AlertMessage.OGRENCI_SILME_HATASI, e.getMessage());
             }
         }
     }
@@ -241,8 +325,8 @@ public class DatabaseController implements Initializable {
         try {
             SceneController.getInstance().anaSahneDon();
         } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Hata", "Ana sahneye dönülürken bir hata oluştu.");
+            ErrorLogger.logError("Ana sahneye dönülürken hata", e);
+            AlertDialog.hata(AlertMessage.ANA_SAHNE_HATA);
         }
     }
 
@@ -254,13 +338,5 @@ public class DatabaseController implements Initializable {
     @FXML
     public void subeGetir(ActionEvent event) {
         loadOgrenciData();
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

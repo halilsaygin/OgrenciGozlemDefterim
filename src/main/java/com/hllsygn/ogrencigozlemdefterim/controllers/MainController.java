@@ -1,16 +1,15 @@
 package com.hllsygn.ogrencigozlemdefterim.controllers;
 
 import com.hllsygn.ogrencigozlemdefterim.database.daos.OgrenciDAO;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertDialog;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertMessage;
+import com.hllsygn.ogrencigozlemdefterim.utils.ErrorLogger;
 import com.hllsygn.ogrencigozlemdefterim.utils.SceneController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -32,6 +30,20 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         populateClassGrid();
+        
+        // İlk açılışta öğrenci kontrolü yap - UI tam yüklendikten sonra
+        javafx.application.Platform.runLater(this::checkFirstLaunch);
+    }
+    
+    /**
+     * İlk açılışta öğrenci kaydı olup olmadığını kontrol eder
+     * Eğer kayıt yoksa kullanıcıyı bilgilendirir
+     */
+    private void checkFirstLaunch() {
+        int ogrenciSayisi = ogrenciDAO.countOgrenciler();
+        if (ogrenciSayisi == 0) {
+            AlertDialog.bilgi(AlertMessage.ILK_ACILIS_OGRENCI_KAYIT);
+        }
     }
 
     private void populateClassGrid() {
@@ -67,46 +79,34 @@ public class MainController implements Initializable {
         try {
             SceneController.getInstance().databaseSahneAc();
         } catch (IOException ex) {
-            ex.printStackTrace();
+            ErrorLogger.logError("Database ekranı açılırken hata", ex);
         }
     }
 
     @FXML
     private void tumKayitlariSil(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Tüm Kayıtları Sil");
-        alert.setHeaderText("Tüm öğrenci ve gözlem kayıtları kalıcı olarak silinecektir.");
-        alert.setContentText("Bu işlem geri alınamaz. Emin misiniz?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (AlertDialog.onay(AlertMessage.TUM_KAYITLARI_SIL_ONAY)) {
             try {
                 ogrenciDAO.deleteAllRecords();
-                showAlert(Alert.AlertType.INFORMATION, "İşlem Başarılı", "Tüm kayıtlar başarıyla silindi.");
-                populateClassGrid(); // Grid'i güncelle
+                AlertDialog.bilgi(AlertMessage.TUM_KAYITLAR_SILINDI);
+                populateClassGrid();
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Veritabanı Hatası", "Kayıtlar silinirken bir hata oluştu: " + e.getMessage());
-                e.printStackTrace();
+                ErrorLogger.logError("Tüm kayıtlar silinirken hata", e);
+                AlertDialog.hataDetayli(AlertMessage.KAYIT_SILME_HATASI, e.getMessage());
             }
         }
     }
     
     @FXML
     private void yeniYilAyarla(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Yeni Yıl Geçişi");
-        alert.setHeaderText("8. sınıflar silinecek ve diğer sınıflar bir üst sınıfa geçirilecektir.");
-        alert.setContentText("5. sınıf kayıtlarını daha sonra manuel olarak girmeniz gerekecektir. Onaylıyor musunuz?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (AlertDialog.onay(AlertMessage.YENI_YIL_ONAY)) {
             try {
                 ogrenciDAO.performYearTransition();
-                showAlert(Alert.AlertType.INFORMATION, "İşlem Başarılı", "Yeni yıl geçişi başarıyla tamamlandı.");
-                populateClassGrid(); // Grid'i güncelle
+                AlertDialog.bilgi(AlertMessage.YENI_YIL_TAMAMLANDI);
+                populateClassGrid();
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Veritabanı Hatası", "Yıl geçişi sırasında bir hata oluştu: " + e.getMessage());
-                e.printStackTrace();
+                ErrorLogger.logError("Yeni yıl geçişi sırasında hata", e);
+                AlertDialog.hataDetayli(AlertMessage.YIL_GECIS_HATASI, e.getMessage());
             }
         }
     }
@@ -126,17 +126,10 @@ public class MainController implements Initializable {
                 try {
                     SceneController.getInstance().gozlemEkraniAc(className);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    ErrorLogger.logError("Gözlem ekranı açılırken hata - Sınıf: " + className, e);
                 }
             }
         }
     }
     
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }

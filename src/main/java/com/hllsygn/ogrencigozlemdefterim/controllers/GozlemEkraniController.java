@@ -4,6 +4,9 @@ import com.hllsygn.ogrencigozlemdefterim.database.daos.GozlemDAO;
 import com.hllsygn.ogrencigozlemdefterim.database.daos.OgrenciDAO;
 import com.hllsygn.ogrencigozlemdefterim.models.Gozlem;
 import com.hllsygn.ogrencigozlemdefterim.models.Ogrenci;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertDialog;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertMessage;
+import com.hllsygn.ogrencigozlemdefterim.utils.ErrorLogger;
 import com.hllsygn.ogrencigozlemdefterim.utils.SceneController;
 import java.io.IOException;
 import java.net.URL;
@@ -15,7 +18,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -91,34 +93,31 @@ public class GozlemEkraniController implements Initializable {
         String gozlemMetni = txt_gozlem.getText();
 
         if (seciliOgrenci == null) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Lütfen bir öğrenci seçin.");
+            AlertDialog.hata(AlertMessage.OGRENCI_SECILMEDI);
             return;
         }
 
         if (gozlemMetni == null || gozlemMetni.trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Hata", "Gözlem metni boş olamaz.");
+            AlertDialog.hata(AlertMessage.GOZLEM_BOS);
             return;
         }
 
         try {
             if (mevcutGozlem != null) {
-                // Güncelleme
                 mevcutGozlem.setGozlemMetni(gozlemMetni);
                 gozlemDAO.update(mevcutGozlem);
-                showAlert(Alert.AlertType.INFORMATION, "Başarılı", "Gözlem başarıyla güncellendi.");
+                AlertDialog.bilgi(AlertMessage.GOZLEM_GUNCELLENDI);
             } else {
-                // Yeni Kayıt
                 Gozlem yeniGozlem = new Gozlem();
                 yeniGozlem.setOgrenciNo(seciliOgrenci.getNo());
                 yeniGozlem.setGozlemMetni(gozlemMetni);
                 gozlemDAO.save(yeniGozlem);
-                // Yeni eklenen kaydı bir sonraki işlem için mevcut olarak ayarla
                 mevcutGozlem = gozlemDAO.findByOgrenciNo(seciliOgrenci.getNo());
-                showAlert(Alert.AlertType.INFORMATION, "Başarılı", "Gözlem başarıyla kaydedildi.");
+                AlertDialog.bilgi(AlertMessage.GOZLEM_KAYDEDILDI);
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Veritabanı Hatası", "İşlem sırasında bir hata oluştu: " + e.getMessage());
-            e.printStackTrace();
+            ErrorLogger.logError("Gözlem kaydedilirken/güncellenirken hata", e);
+            AlertDialog.hataDetayli(AlertMessage.VERITABANI_HATASI, e.getMessage());
         }
     }
 
@@ -127,16 +126,8 @@ public class GozlemEkraniController implements Initializable {
         try {
             SceneController.getInstance().anaSahneDon();
         } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Hata", "Ana sahneye dönülürken bir hata oluştu.");
+            ErrorLogger.logError("Gözlem ekranından ana sahneye dönülürken hata", e);
+            AlertDialog.hata(AlertMessage.ANA_SAHNE_HATA);
         }
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

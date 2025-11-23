@@ -1,6 +1,6 @@
 # Öğrenci Gözlem Defterim
 
-Öğretmenler için tasarlanmış, geleneksel kağıt defterlerin yerini alan modern bir masaüstü uygulamasıdır. Bu proje, öğrenci bilgilerini yönetmeyi ve her bir öğrenci için gözlem notları almayı kolaylaştırır.
+Öğretmenler için tasarlanmış, geleneksel kağıt defterlerin yerini alan modern bir masaüstü uygulamasıdır. Bu proje, öğrenci gözlem ve görüş bilgilerini yönetmeyi ve her bir öğrenci için bu mivalde notlar tutmayı kolaylaştırır.
 
 ## Projenin Amacı
 
@@ -8,8 +8,8 @@ Bu uygulamanın temel hedefi, öğretmenlerin öğrencilerinin akademik ve sosya
 
 ## Ana Özellikler
 
-*   **Öğrenci Yönetimi:** Öğrenci listeleri oluşturun, bilgileri (isim, sınıf, şube, numara) güncelleyin ve mezun olanları kolayca arşivleyin.
-*   **Gözlem Kayıtları:** Her bir öğrenciye özel, tarihsel gözlem notları ekleyin. Bu notlar, öğrencinin gelişimini izlemek için önemli bir kaynak oluşturur.
+*   **Öğrenci Yönetimi:** Öğrenci listeleri oluşturun, bilgileri (isim, sınıf, şube, numara) güncelleyin.
+*   **Gözlem Kayıtları:** Her bir öğrenciye gözlem notları ekleyin. Bu notlar, öğrencinin gelişimini izlemek için önemli bir kaynak oluşturur.
 *   **Hızlı Filtreleme:** Sınıf ve şubeye göre filtreleme yaparak aradığınız öğrenciye saniyeler içinde ulaşın.
 *   **Yerel Veritabanı:** Tüm veriler, bilgisayarınızda tek bir dosyada (SQLite) saklanır. Bu sayede internet bağlantısına ihtiyaç duymadan, güvenli ve taşınabilir bir kullanım sunar.
 *   **Hata Yönetimi:** Uygulama, oluşan hataları otomatik olarak `error_log.txt` dosyasına kaydeder ve sistem bilgilerini loglar.
@@ -102,19 +102,15 @@ Uygulama başarıyla paketlendiğinde, çalıştırılabilir dosyalar şu konuml
 *   SQLite veritabanı ile yerel veri saklama
 *   DAO (Data Access Object) pattern kullanımı
 *   Otomatik veritabanı oluşturma ve bağlantı yönetimi
-*   Örnek veri oluşturma desteği (SampleData)
 
 ### Kullanıcı Arayüzü
 *   JavaFX FXML tabanlı modern arayüz
 *   Özel CSS stillendirme
-*   Font Awesome icon desteği
-*   Animasyonlu geçişler (PushAnimation)
 *   Responsive tasarım
 
 ### Hata Yönetimi
 *   Global exception handler
 *   Otomatik hata loglama (`error_log.txt`)
-*   Sistem bilgisi loglama
 *   Kullanıcı dostu hata mesajları
 
 ## Daha Fazla Komut

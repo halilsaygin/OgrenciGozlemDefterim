@@ -1,9 +1,9 @@
 package com.hllsygn.ogrencigozlemdefterim;
 
 import com.hllsygn.ogrencigozlemdefterim.database.DBConnect;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertDialog;
+import com.hllsygn.ogrencigozlemdefterim.utils.AlertMessage;
 import com.hllsygn.ogrencigozlemdefterim.utils.ErrorLogger;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Objects;
 
 import javafx.application.Application;
@@ -12,8 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 public class Main extends Application {
 
@@ -49,10 +47,7 @@ public class Main extends Application {
             
         } catch (Exception e) {
             ErrorLogger.logError("Uygulama başlatılırken kritik hata oluştu", e);
-            showErrorDialog("Uygulama Başlatma Hatası", 
-                          "Uygulama başlatılırken bir hata oluştu.\n" +
-                          "Detaylar için error_log.txt dosyasını kontrol edin.\n\n" +
-                          "Hata: " + e.getMessage());
+            AlertDialog.hataDetayli(AlertMessage.UYGULAMA_BASLAMA_HATASI, "\n\nHata: " + e.getMessage());
             System.exit(1);
         }
     }
@@ -69,21 +64,7 @@ public class Main extends Application {
         super.stop();
     }
     
-    /**
-     * Kullanıcıya hata mesajı gösterir
-     */
-    private void showErrorDialog(String title, String message) {
-        try {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
-        } catch (Exception e) {
-            // Alert gösterilemezse konsola yaz
-            System.err.println(title + ": " + message);
-        }
-    }
+
 
     /**
      * @param args the command line arguments
@@ -93,7 +74,6 @@ public class Main extends Application {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             ErrorLogger.logError("Yakalanmamış hata - Thread: " + thread.getName(), throwable);
             System.err.println("Kritik hata oluştu. Detaylar error_log.txt dosyasına kaydedildi.");
-            throwable.printStackTrace();
         });
         
         try {
@@ -102,7 +82,6 @@ public class Main extends Application {
         } catch (Exception e) {
             ErrorLogger.logError("Main metodunda kritik hata", e);
             System.err.println("Uygulama başlatılamadı. Detaylar error_log.txt dosyasına kaydedildi.");
-            e.printStackTrace();
             System.exit(1);
         }
     }

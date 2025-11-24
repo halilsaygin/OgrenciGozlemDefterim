@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 public class InputValidator {
     
     // Regex pattern'leri
-    private static final Pattern AD_SOYAD_PATTERN = Pattern.compile("^([A-ZÇĞIÖŞÜ][a-zçğıöşü]+)(\\s[A-ZÇĞIÖŞÜ][a-zçğıöşü]+)?\\s[A-ZÇĞIÖŞÜ]+$");
+    // Ad: İlk harf büyük, sonraki harfler küçük (Türkçe karakterler dahil)
+    // Soyad: Tüm harfler büyük (Türkçe karakterler dahil: A-Z, Ç, Ğ, İ, Ö, Ş, Ü)
+    private static final Pattern AD_SOYAD_PATTERN = Pattern.compile("^([A-ZÇĞİÖŞÜ][a-zçğıöşü]+)(\\s[A-ZÇĞİÖŞÜ][a-zçğıöşü]+)?\\s[A-ZÇĞİÖŞÜ]+$");
     // Şube: Türkçe alfabe A-N arası (Ğ hariç): A,B,C,Ç,D,E,F,G,H,I,İ,J,K,L,M,N
     private static final Pattern SUBE_PATTERN = Pattern.compile("^[A-CÇDEFGHİİJKLMN]$");
     private static final Pattern SAYI_PATTERN = Pattern.compile("^\\d+$");

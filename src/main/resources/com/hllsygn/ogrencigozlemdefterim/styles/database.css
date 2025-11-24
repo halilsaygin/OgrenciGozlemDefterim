@@ -25,13 +25,14 @@
   -fx-border-color: #000000;
 }
 
+/* ComboBox genel stil - TextField ile uyumlu */
 .combo-box {
   -fx-background-color: #ffffff;
-  -fx-border-color: #cccccc;
+  -fx-border-color: #dddddd;
   -fx-border-width: 1px;
   -fx-border-radius: 5px;
-  -fx-font-family: "Segoe UI";
-  -fx-font-size: 16px;
+  -fx-font-family: "Arial";
+  -fx-font-size: 18px;
 }
 
 .combo-box:hover {
@@ -39,7 +40,36 @@
 }
 
 .combo-box:focused {
+  -fx-background-color: #fafafa;
   -fx-border-color: #000000;
+}
+
+/* ComboBox içindeki text alanı */
+.combo-box .text-input {
+  -fx-font-family: "Arial";
+  -fx-font-size: 18px;
+  -fx-padding: 5px;
+  -fx-background-color: transparent;
+}
+
+/* ComboBox ok butonu */
+.combo-box .arrow-button {
+  -fx-background-color: transparent;
+  -fx-padding: 5px;
+}
+
+/* ComboBox dropdown listesi */
+.combo-box-popup .list-view {
+  -fx-font-family: "Arial";
+  -fx-font-size: 18px;
+}
+
+.combo-box-popup .list-view .list-cell {
+  -fx-padding: 5px;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+  -fx-background-color: #e0e0e0;
 }
 
 .table-view .table-cell {

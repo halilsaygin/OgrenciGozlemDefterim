@@ -43,11 +43,11 @@ public class GozlemEkraniController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // ComboBox'ta öğrencinin adının ve soyadının nasıl gösterileceğini ayarla
+        // ComboBox'ta öğrencinin numarası, adı ve soyadının nasıl gösterileceğini ayarla
         combx_ogrenciler.setConverter(new StringConverter<Ogrenci>() {
             @Override
             public String toString(Ogrenci ogrenci) {
-                return ogrenci == null ? null : ogrenci.getAdSoyad();
+                return ogrenci == null ? null : ogrenci.getNo() + " - " + ogrenci.getAdSoyad();
             }
 
             @Override

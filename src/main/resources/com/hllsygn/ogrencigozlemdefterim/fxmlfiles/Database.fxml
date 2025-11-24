@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -37,46 +38,46 @@
                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label alignment="CENTER_RIGHT" styleClass="constant-label" text="Adı Soyadı:" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                              <Label alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="110.0" styleClass="constant-label" text="No:" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                                  <font>
                                     <Font name="Segoe UI" size="24.0" />
                                  </font>
                               </Label>
-                              <Label alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="119.0" styleClass="constant-label" text="Sınıf:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                              <TextField fx:id="txtf_no" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Verdana" size="18.0" />
+                                 </font>
+                              </TextField>
+                              <Label alignment="CENTER_RIGHT" styleClass="constant-label" text="Adı Soyadı:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                  <font>
                                     <Font name="Segoe UI" size="24.0" />
                                  </font>
                               </Label>
-                              <Label alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="110.0" styleClass="constant-label" text="Şube:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                              <TextField fx:id="txtf_ad_soyad" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <font>
+                                    <Font name="Verdana" size="18.0" />
+                                 </font>
+                              </TextField>
+                              <Label alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="119.0" styleClass="constant-label" text="Sınıf:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                  <font>
                                     <Font name="Segoe UI" size="24.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="txtf_ad_soyad" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1">
-                                 <font>
-                                    <Font name="Verdana" size="18.0" />
-                                 </font>
-                              </TextField>
-                              <TextField fx:id="txtf_sinif" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                 <font>
-                                    <Font name="Verdana" size="18.0" />
-                                 </font>
-                              </TextField>
-                              <TextField fx:id="txtf_sube" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                 <font>
-                                    <Font name="Verdana" size="18.0" />
-                                 </font>
-                              </TextField>
-                              <Label alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="110.0" styleClass="constant-label" text="No:" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                              <ComboBox fx:id="txtf_sinif" editable="true" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                 <styleClass>
+                                    <String fx:value="combo-box" />
+                                 </styleClass>
+                              </ComboBox>
+                              <Label alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="110.0" styleClass="constant-label" text="Şube:" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                                  <font>
                                     <Font name="Segoe UI" size="24.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="txtf_no" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                 <font>
-                                    <Font name="Verdana" size="18.0" />
-                                 </font>
-                              </TextField>
+                              <ComboBox fx:id="txtf_sube" editable="true" prefHeight="31.0" prefWidth="244.0" styleClass="text-field-style" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                 <styleClass>
+                                    <String fx:value="combo-box" />
+                                 </styleClass>
+                              </ComboBox>
                            </children>
                         </GridPane>
                         <VBox spacing="10.0">

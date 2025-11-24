@@ -32,11 +32,15 @@ public class DatabaseController implements Initializable {
     @FXML
     private TextField txtf_ad_soyad;
     @FXML
-    private TextField txtf_sinif;
+    private ComboBox<String> txtf_sinif;
     @FXML
-    private TextField txtf_sube;
+    private ComboBox<String> txtf_sube;
     @FXML
     private TextField txtf_no;
+    
+    // Girilen değerleri hatırlamak için
+    private final ObservableList<String> sinifHistory = FXCollections.observableArrayList();
+    private final ObservableList<String> subeHistory = FXCollections.observableArrayList();
     @FXML
     private Button btn_ekle;
     @FXML
@@ -80,15 +84,102 @@ public class DatabaseController implements Initializable {
         
         // Tüm text field'lara listener ekle - tümü boşsa seçimi kaldır
         txtf_ad_soyad.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
-        txtf_sinif.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
-        txtf_sube.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
+        txtf_sinif.getEditor().textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
+        txtf_sube.getEditor().textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
         txtf_no.textProperty().addListener((obs, oldVal, newVal) -> checkAndClearSelection());
+        
+        // ComboBox'ları ayarla
+        setupInputComboBoxes();
+        
+        // Enter tuşu ile Ekle butonunu tetikle
+        setupEnterKeyHandler();
 
         loadFilterComboBoxes();
         loadOgrenciData();
         
         // İlk açılışta öğrenci kontrolü yap - UI tam yüklendikten sonra
         javafx.application.Platform.runLater(this::checkFirstLaunchDatabase);
+    }
+    
+    /**
+     * Enter tuşu handler'larını ayarlar (sadece TextField'lar için)
+     */
+    private void setupEnterKeyHandler() {
+        // Sadece TextField'lara Enter tuşu handler'ı ekle
+        txtf_no.setOnAction(e -> btn_ekle.fire());
+        txtf_ad_soyad.setOnAction(e -> btn_ekle.fire());
+    }
+    
+    /**
+     * Sınıf ve şube ComboBox'larını ayarlar
+     * Ok butonuna tıklandığında açılır ve ilk item seçili gelir
+     */
+    private void setupInputComboBoxes() {
+        // Sınıf ComboBox ayarları
+        txtf_sinif.setItems(sinifHistory);
+        
+        // Seçim yapıldığında değeri text field'a yaz
+        txtf_sinif.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null && txtf_sinif.getEditor() != null) {
+                txtf_sinif.getEditor().setText(newValue);
+            }
+        });
+        
+        // Dropdown açıldığında ilk item'ı seç
+        txtf_sinif.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+            if (isNowShowing && !sinifHistory.isEmpty()) {
+                txtf_sinif.getSelectionModel().selectFirst();
+            }
+        });
+        
+        // Enter veya seçim yapıldığında değeri onayla
+        txtf_sinif.setOnAction(e -> {
+            String value = txtf_sinif.getValue();
+            if (value != null) {
+                txtf_sinif.getEditor().setText(value);
+            }
+            txtf_sinif.hide();
+        });
+        
+        // Şube ComboBox ayarları
+        txtf_sube.setItems(subeHistory);
+        
+        // Seçim yapıldığında değeri text field'a yaz
+        txtf_sube.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null && txtf_sube.getEditor() != null) {
+                txtf_sube.getEditor().setText(newValue);
+            }
+        });
+        
+        // Dropdown açıldığında ilk item'ı seç
+        txtf_sube.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+            if (isNowShowing && !subeHistory.isEmpty()) {
+                txtf_sube.getSelectionModel().selectFirst();
+            }
+        });
+        
+        // Enter veya seçim yapıldığında değeri onayla
+        txtf_sube.setOnAction(e -> {
+            String value = txtf_sube.getValue();
+            if (value != null) {
+                txtf_sube.getEditor().setText(value);
+            }
+            txtf_sube.hide();
+        });
+    }
+    
+    /**
+     * Girilen değeri history'ye ekler (tekrar yoksa)
+     * Son eklenen en üstte olacak şekilde
+     */
+    private void addToHistory(ObservableList<String> history, String value) {
+        if (value != null && !value.trim().isEmpty()) {
+            String trimmedValue = value.trim();
+            // Eğer zaten varsa kaldır
+            history.remove(trimmedValue);
+            // En başa ekle (son eklenen en üstte)
+            history.add(0, trimmedValue);
+        }
     }
     
     /**
@@ -134,19 +225,18 @@ public class DatabaseController implements Initializable {
 
     private void showOgrenciDetails(Ogrenci ogrenci) {
         txtf_ad_soyad.setText(ogrenci.getAdSoyad());
-        txtf_sinif.setText(String.valueOf(ogrenci.getSinif()));
-        txtf_sube.setText(ogrenci.getSube());
+        txtf_sinif.getEditor().setText(String.valueOf(ogrenci.getSinif()));
+        txtf_sube.getEditor().setText(ogrenci.getSube());
         txtf_no.setText(String.valueOf(ogrenci.getNo()));
         txtf_no.setEditable(true); // Öğrenci no artık düzenlenebilir
     }
     
     /**
-     * Tüm alanlar boşsa öğrenci seçimini kaldırır
+     * Ad Soyad ve No alanları boşsa öğrenci seçimini kaldırır
+     * (Sınıf ve şube son değeri koruyacağı için kontrol edilmiyor)
      */
     private void checkAndClearSelection() {
         if (txtf_ad_soyad.getText().trim().isEmpty() && 
-            txtf_sinif.getText().trim().isEmpty() && 
-            txtf_sube.getText().trim().isEmpty() && 
             txtf_no.getText().trim().isEmpty()) {
             selectedOgrenci = null;
             tableview_liste.getSelectionModel().clearSelection();
@@ -155,9 +245,9 @@ public class DatabaseController implements Initializable {
 
     private void clearForm() {
         txtf_ad_soyad.clear();
-        txtf_sinif.clear();
-        txtf_sube.clear();
         txtf_no.clear();
+        // Sınıf ve şube ComboBox'ları temizleme - son değer kalacak
+        // txtf_sinif ve txtf_sube temizlenmiyor
         txtf_no.setEditable(true);
         selectedOgrenci = null;
         tableview_liste.getSelectionModel().clearSelection();
@@ -167,8 +257,8 @@ public class DatabaseController implements Initializable {
     public void ogrenciEkle(ActionEvent event) {
         // Tüm alanlar dolu mu kontrol et
         if (txtf_ad_soyad.getText().trim().isEmpty() || 
-            txtf_sinif.getText().trim().isEmpty() || 
-            txtf_sube.getText().trim().isEmpty() || 
+            txtf_sinif.getEditor().getText().trim().isEmpty() || 
+            txtf_sube.getEditor().getText().trim().isEmpty() || 
             txtf_no.getText().trim().isEmpty()) {
             AlertDialog.hata(AlertMessage.TUM_ALANLAR_DOLU);
             return;
@@ -187,13 +277,13 @@ public class DatabaseController implements Initializable {
         }
         
         // Sınıf validasyonu
-        if (!InputValidator.validateSinif(txtf_sinif.getText())) {
+        if (!InputValidator.validateSinif(txtf_sinif.getEditor().getText())) {
             AlertDialog.uyari(AlertMessage.GECERSIZ_SINIF);
             return;
         }
         
         // Şube validasyonu
-        if (!InputValidator.validateSube(txtf_sube.getText())) {
+        if (!InputValidator.validateSube(txtf_sube.getEditor().getText())) {
             AlertDialog.uyari(AlertMessage.GECERSIZ_SUBE);
             return;
         }
@@ -206,8 +296,12 @@ public class DatabaseController implements Initializable {
         
         try {
             int no = Integer.parseInt(txtf_no.getText().trim());
-            int sinif = Integer.parseInt(txtf_sinif.getText().trim());
-            String sube = txtf_sube.getText().trim();
+            int sinif = Integer.parseInt(txtf_sinif.getEditor().getText().trim());
+            String sube = txtf_sube.getEditor().getText().trim();
+            
+            // History'ye ekle
+            addToHistory(sinifHistory, String.valueOf(sinif));
+            addToHistory(subeHistory, sube);
 
             if (ogrenciDAO.findById(no) != null) {
                 AlertDialog.hata(AlertMessage.OGRENCI_MEVCUT);
@@ -235,8 +329,8 @@ public class DatabaseController implements Initializable {
         
         // Tüm alanlar dolu mu kontrol et
         if (txtf_ad_soyad.getText().trim().isEmpty() || 
-            txtf_sinif.getText().trim().isEmpty() || 
-            txtf_sube.getText().trim().isEmpty() || 
+            txtf_sinif.getEditor().getText().trim().isEmpty() || 
+            txtf_sube.getEditor().getText().trim().isEmpty() || 
             txtf_no.getText().trim().isEmpty()) {
             AlertDialog.hata(AlertMessage.TUM_ALANLAR_DOLU);
             return;
@@ -262,13 +356,13 @@ public class DatabaseController implements Initializable {
         }
         
         // Sınıf validasyonu
-        if (!InputValidator.validateSinif(txtf_sinif.getText())) {
+        if (!InputValidator.validateSinif(txtf_sinif.getEditor().getText())) {
             AlertDialog.uyari(AlertMessage.GECERSIZ_SINIF);
             return;
         }
         
         // Şube validasyonu
-        if (!InputValidator.validateSube(txtf_sube.getText())) {
+        if (!InputValidator.validateSube(txtf_sube.getEditor().getText())) {
             AlertDialog.uyari(AlertMessage.GECERSIZ_SUBE);
             return;
         }
@@ -280,8 +374,12 @@ public class DatabaseController implements Initializable {
         String soyad = tamAd.substring(lastSpaceIndex + 1);
 
         try {
-            int sinif = Integer.parseInt(txtf_sinif.getText().trim());
-            String sube = txtf_sube.getText().trim();
+            int sinif = Integer.parseInt(txtf_sinif.getEditor().getText().trim());
+            String sube = txtf_sube.getEditor().getText().trim();
+            
+            // History'ye ekle
+            addToHistory(sinifHistory, String.valueOf(sinif));
+            addToHistory(subeHistory, sube);
             
             Ogrenci guncellenenOgrenci = new Ogrenci(selectedOgrenci.getNo(), ad, soyad, sinif, sube);
             ogrenciDAO.update(guncellenenOgrenci);
